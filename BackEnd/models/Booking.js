@@ -1,0 +1,25 @@
+const mongoose = require('mongoose');
+
+const BookingSchema = new mongoose.Schema({
+  ride: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ride',
+    required: true
+  },
+  passenger: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
+    required: true
+  },
+  status: {
+    type: String,
+    enum: ['Requested', 'Confirmed', 'Rejected'],
+    default: 'Requested'
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+module.exports = mongoose.model('booking', BookingSchema);
