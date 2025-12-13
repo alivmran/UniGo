@@ -2,9 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Login from './pages/Login';
-
-// A simple placeholder for Dashboard (we will build this later)
-const Dashboard = () => <h2>Welcome to UniGo Dashboard</h2>;
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import PostRide from './pages/PostRide';
+import MyBookings from './pages/MyBookings';
+import RideRequests from './pages/RideRequests';
 
 function App() {
   return (
@@ -12,11 +14,13 @@ function App() {
       <Router>
         <div className="App">
           <Routes>
-            {/* If user goes to root path "/", redirect to login */}
             <Route path="/" element={<Navigate to="/login" />} />
-            
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/post-ride" element={<PostRide />} />
+            <Route path="/my-bookings" element={<MyBookings />} /> 
+            <Route path="/ride-requests" element={<RideRequests />} />
           </Routes>
         </div>
       </Router>

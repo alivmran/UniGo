@@ -1,44 +1,35 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
-  // 1. State: Variables that update as you type
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [error, setError] = useState('');
 
-  // 2. Hooks: Tools to navigate and access global data
-  const { login } = useContext(AuthContext); // Get the login function from our "Brain"
-  const navigate = useNavigate(); // Tool to change pages
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  // 3. Handle Input Change
-  // When you type, this updates the specific field (email or password) in State
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 4. Handle Submit
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Stop page from reloading
+    e.preventDefault();
     try {
-      // Send data to Backend
       const res = await axios.post('/api/auth/login', formData);
-      
-      // If successful, save token and move to Dashboard
       login(res.data.token);
       navigate('/dashboard'); 
     } catch (err) {
-      // If error, show the message from backend
       setError(err.response?.data?.msg || 'Login failed');
     }
   };
 
   return (
-    // OUTER CONTAINER: Takes full screen height and centers content
+    // OUTER CONTAINER
     <div style={{ 
       display: 'flex', 
       justifyContent: 'center', 
@@ -48,14 +39,14 @@ const Login = () => {
       backgroundColor: '#202322' 
     }}>
       
-      {/* CARD: The white box holding the form */}
+      {/* CARD */}
       <div style={{ 
         padding: '40px', 
         width: '100%', 
         maxWidth: '400px', 
         backgroundColor: 'white', 
         borderRadius: '8px', 
-        boxShadow: '0 4px 8px rgba(0,0,0,0.1)', // Subtle drop shadow
+        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
         color: '#333'
       }}>
         
@@ -106,6 +97,10 @@ const Login = () => {
             Login
           </button>
         </form>
+        <p style={{ marginTop: '15px', textAlign: 'center' }}>
+          Don't have an account? <Link to="/register" style={{ color: '#007bff', textDecoration: 'none' }}>Register here</Link>
+        </p>
+
       </div>
     </div>
   );
