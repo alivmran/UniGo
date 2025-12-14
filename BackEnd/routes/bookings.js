@@ -98,4 +98,32 @@ router.put('/:id', auth, async (req, res) => {
     }
 });
 
+router.delete('/:id', auth, async (req, res) => {
+    try {
+        const booking = await Booking.findById(req.params.id);
+
+        if (!booking) {
+            return res.status(404).json({ msg: 'Booking not found' });
+        }
+
+        if (booking.passenger.toString() !== req.user.id) {
+            return res.status(401).json({ msg: 'User not authorized' });
+        }
+
+        if (booking.status === 'Confirmed') {
+            const ride = await Ride.findById(booking.ride);
+            if (ride) {
+                ride.seatsAvailable += 1; 
+                await ride.save();
+            }
+        }
+
+        await Booking.findByIdAndDelete(req.params.id);
+        res.json({ msg: 'Booking cancelled' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;

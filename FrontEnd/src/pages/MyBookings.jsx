@@ -7,34 +7,44 @@ const MyBookings = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchBookings = async () => {
-      const token = localStorage.getItem('token');
-      try {
-        const config = { headers: { 'x-auth-token': token } };
-        // Fetch bookings for the logged-in user
-        const res = await axios.get('/api/bookings/my-bookings', config);
-        setBookings(res.data);
-      } catch (err) {
-        console.error("Error fetching bookings", err);
-      }
-    };
     fetchBookings();
   }, []);
+
+  const fetchBookings = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const config = { headers: { 'x-auth-token': token } };
+      const res = await axios.get('/api/bookings/my-bookings', config);
+      setBookings(res.data);
+    } catch (err) {
+      console.error("Error fetching bookings", err);
+    }
+  };
+
+  // NEW: Handle Cancel
+  const handleCancelBooking = async (bookingId) => {
+    if(!window.confirm("Cancel this booking?")) return;
+
+    try {
+        const token = localStorage.getItem('token');
+        const config = { headers: { 'x-auth-token': token } };
+        await axios.delete(`/api/bookings/${bookingId}`, config);
+        
+        // Remove from list immediately
+        setBookings(bookings.filter(b => b._id !== bookingId));
+        alert("Booking cancelled");
+    } catch (err) {
+        alert("Error cancelling booking");
+    }
+  };
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f4f4f4', padding: '20px' }}>
       
-      {/* Header with Back Button */}
       <div style={{ maxWidth: '800px', margin: 'auto', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '15px' }}>
         <button 
           onClick={() => navigate('/dashboard')} 
-          style={{ 
-            padding: '8px 12px', 
-            cursor: 'pointer', 
-            border: 'none', 
-            backgroundColor: '#ddd', 
-            borderRadius: '4px' 
-          }}>
+          style={{ padding: '8px 12px', cursor: 'pointer', border: 'none', backgroundColor: '#ddd', borderRadius: '4px' }}>
             ← Back
         </button>
         <h1 style={{ margin: 0, color: '#202322' }}>My Bookings</h1>
@@ -57,23 +67,34 @@ const MyBookings = () => {
               borderLeft: `5px solid ${booking.status === 'Confirmed' ? '#28a745' : '#ffc107'}`
             }}>
               <div>
-                {/* Check if ride details exist (in case driver deleted it) */}
                 <h3 style={{ margin: '0 0 5px 0', color: '#333' }}>
                   {booking.ride ? `${booking.ride.origin} ➔ ${booking.ride.destination}` : "Ride Details Unavailable"}
                 </h3>
                 <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
-                  Status: <span style={{ 
-                    fontWeight: 'bold', 
-                    color: booking.status === 'Confirmed' ? 'green' : (booking.status === 'Rejected' ? 'red' : 'orange') 
-                  }}>
+                  Status: <span style={{ fontWeight: 'bold', color: booking.status === 'Confirmed' ? 'green' : 'orange' }}>
                     {booking.status}
                   </span>
                 </p>
               </div>
               
-              <div style={{ textAlign: 'right' }}>
-                 <p style={{ margin: '0 0 5px 0', fontWeight: 'bold' }}>{booking.ride ? `Rs. ${booking.ride.price}` : '-'}</p>
-                 <span style={{ fontSize: '12px', color: '#999' }}>{booking.ride ? `${booking.ride.date}` : ''}</span>
+              <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                 <span style={{ fontWeight: 'bold' }}>{booking.ride ? `Rs. ${booking.ride.price}` : '-'}</span>
+                 
+                 {/* Cancel Button */}
+                 <button 
+                    onClick={() => handleCancelBooking(booking._id)}
+                    style={{
+                        padding: '5px 10px',
+                        backgroundColor: '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '3px',
+                        fontSize: '12px',
+                        cursor: 'pointer'
+                    }}
+                 >
+                    Cancel
+                 </button>
               </div>
             </div>
           ))

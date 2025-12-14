@@ -38,6 +38,23 @@ const Dashboard = () => {
     navigate('/login');
   };
 
+  // 3. Handle Delete Logic
+  const handleDeleteRide = async (rideId) => {
+    if (!window.confirm("Are you sure you want to delete this ride?")) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const config = { headers: { 'x-auth-token': token } };
+      await axios.delete(`/api/rides/${rideId}`, config);
+
+      // Remove the deleted ride from the list immediately
+      setRides(rides.filter(ride => ride._id !== rideId));
+      alert("Ride deleted");
+    } catch (err) {
+      alert("Error deleting ride");
+    }
+  };
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f4f4f4' }}>
       
@@ -115,18 +132,44 @@ const Dashboard = () => {
                   </span>
                 </div>
 
+                {/* --- UPDATED LOGIC HERE --- */}
                 {user && user.id === ride.driver ? (
-                  <button disabled style={{ width: '100%', marginTop: '15px', padding: '10px', backgroundColor: '#ccc', color: '#666', border: 'none', borderRadius: '4px', cursor: 'not-allowed' }}>
-                    Your Ride
+                  // If I am the driver, show DELETE button
+                  <button 
+                    onClick={() => handleDeleteRide(ride._id)}
+                    style={{ 
+                      width: '100%', 
+                      marginTop: '15px', 
+                      padding: '10px', 
+                      backgroundColor: '#dc3545', // Red for delete
+                      color: 'white', 
+                      border: 'none', 
+                      borderRadius: '4px', 
+                      cursor: 'pointer' 
+                    }}
+                  >
+                    Delete Ride
                   </button>
                 ) : (
+                  // If I am a passenger, show BOOK button
                   <button 
                     onClick={() => handleBookRide(ride._id)}
-                    style={{ width: '100%', marginTop: '15px', padding: '10px', backgroundColor: '#202322', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    style={{ 
+                      width: '100%', 
+                      marginTop: '15px', 
+                      padding: '10px', 
+                      backgroundColor: '#202322', 
+                      color: 'white', 
+                      border: 'none', 
+                      borderRadius: '4px', 
+                      cursor: 'pointer' 
+                    }}
                   >
                     Book Seat
                   </button>
                 )}
+                {/* ------------------------- */}
+
               </div>
             ))
           )}

@@ -83,8 +83,12 @@ router.delete('/:id', auth, async (req, res, next) => {
       return res.status(401).json({ msg: 'User not authorized to delete this ride' });
     }
 
+    const Booking = require('../models/Booking'); 
+    await Booking.deleteMany({ ride: req.params.id });
+
     await ride.deleteOne();
-    res.json({ msg: 'Ride removed' });
+    
+    res.json({ msg: 'Ride and associated bookings removed' });
   } catch (err) {
     next(err);
   }
