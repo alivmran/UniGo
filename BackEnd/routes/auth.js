@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const auth = require('../middleware/auth');
 
 router.post('/register', async (req, res, next) => {
   const { name, email, password, universityID } = req.body;
@@ -68,6 +69,48 @@ router.post('/login', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+router.get('/profile', auth, async (req, res) => {
+    try {
+        const User = require('../models/User');
+        const Ride = require('../models/Ride');
+        const Booking = require('../models/Booking');
+
+        const user = await User.findById(req.user.id).select('-password');
+
+        const ridesGiven = await Ride.countDocuments({ driver: req.user.id });
+
+        const ridesTaken = await Booking.countDocuments({ passenger: req.user.id });
+
+        const driverRides = await Ride.find({ driver: req.user.id });
+        const driverRideIds = driverRides.map(r => r._id);
+
+        const ratedBookings = await Booking.find({ 
+            ride: { $in: driverRideIds }, 
+            status: 'Completed', 
+            rating: { $gt: 0 } 
+        });
+
+        let ratingDisplay = 'New';
+        if (ratedBookings.length > 0) {
+            const totalStars = ratedBookings.reduce((acc, b) => acc + b.rating, 0);
+            const maxScore = ratedBookings.length * 5;
+            ratingDisplay = Math.round((totalStars / maxScore) * 100) + '%';
+        }
+
+        res.json({
+            user,
+            stats: {
+                ridesGiven,
+                ridesTaken,
+                rating: ratingDisplay
+            }
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
 });
 
 module.exports = router;

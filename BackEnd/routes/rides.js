@@ -24,23 +24,43 @@ router.post('/', auth, async (req, res, next) => {
   }
 });
 
-router.get('/', async (req, res, next) => {
-  try {
-    const { origin, destination } = req.query;
-    let query = {};
-    
-    if (origin) {
-        query.origin = { $regex: origin, $options: 'i' };
-    }
-    if (destination) {
-        query.destination = { $regex: destination, $options: 'i' };
-    }
+router.get('/', async (req, res) => {
+    try {
+        const rides = await Ride.find().populate('driver', 'name').sort({ date: 1 });
+        const Booking = require('../models/Booking');
 
-    const rides = await Ride.find(query).sort({ date: -1 });
-    res.json(rides);
-  } catch (err) {
-    next(err);
-  }
+        const ridesWithRating = await Promise.all(rides.map(async (ride) => {
+            if (!ride.driver) {
+                return { ...ride._doc, driverName: 'Unknown', driverRating: 'New' };
+            }
+
+            const driverBookings = await Booking.find({ 
+                driver: ride.driver._id, 
+                status: 'Completed', 
+                rating: { $gt: 0 } 
+            });
+
+            let ratingDisplay = 'New';
+
+            if (driverBookings.length > 0) {
+                const totalStars = driverBookings.reduce((acc, b) => acc + b.rating, 0);
+                const maxPossibleScore = driverBookings.length * 5;
+                const percentage = Math.round((totalStars / maxPossibleScore) * 100);
+                ratingDisplay = `${percentage}%`; 
+            }
+
+            return {
+                ...ride._doc,
+                driverName: ride.driver.name,
+                driverRating: ratingDisplay
+            };
+        }));
+
+        res.json(ridesWithRating);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
 });
 
 router.put('/:id', auth, async (req, res, next) => {

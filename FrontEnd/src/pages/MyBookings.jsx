@@ -1,107 +1,147 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const MyBookings = () => {
+  const { logout } = useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchBookings = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const config = { headers: { 'x-auth-token': token } };
+        const res = await axios.get('/api/bookings/my-bookings', config);
+        setBookings(res.data);
+      } catch (err) {
+        console.error("Error fetching bookings", err);
+      }
+    };
     fetchBookings();
   }, []);
 
-  const fetchBookings = async () => {
-    const token = localStorage.getItem('token');
+  const handleRateRide = async (bookingId, ratingValue) => {
     try {
-      const config = { headers: { 'x-auth-token': token } };
-      const res = await axios.get('/api/bookings/my-bookings', config);
-      setBookings(res.data);
+        const token = localStorage.getItem('token');
+        const config = { headers: { 'x-auth-token': token } };
+        await axios.post(`/api/bookings/${bookingId}/rate`, { rating: ratingValue }, config);
+        alert("Thanks for rating!");
+        window.location.reload(); 
     } catch (err) {
-      console.error("Error fetching bookings", err);
+        alert("Error submitting rating");
     }
   };
 
-  // NEW: Handle Cancel
   const handleCancelBooking = async (bookingId) => {
     if(!window.confirm("Cancel this booking?")) return;
-
     try {
         const token = localStorage.getItem('token');
         const config = { headers: { 'x-auth-token': token } };
         await axios.delete(`/api/bookings/${bookingId}`, config);
-        
-        // Remove from list immediately
         setBookings(bookings.filter(b => b._id !== bookingId));
-        alert("Booking cancelled");
     } catch (err) {
         alert("Error cancelling booking");
     }
   };
 
-  return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f4f4f4', padding: '20px' }}>
-      
-      <div style={{ maxWidth: '800px', margin: 'auto', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-        <button 
-          onClick={() => navigate('/dashboard')} 
-          style={{ padding: '8px 12px', cursor: 'pointer', border: 'none', backgroundColor: '#ddd', borderRadius: '4px' }}>
-            ← Back
-        </button>
-        <h1 style={{ margin: 0, color: '#202322' }}>My Bookings</h1>
-      </div>
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
-      <div style={{ maxWidth: '800px', margin: 'auto' }}>
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '#2E2D2D' }}>
+      
+      {/* NAVBAR */}
+      <nav style={navStyle}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <img src="/logo.png" alt="Logo" style={{ height: '45px', objectFit: 'contain' }} />
+            <h2 style={{ margin: 0, color: 'white', fontSize: '28px', fontWeight: '600', letterSpacing: '1px' }}>UniGo</h2>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
+          <span 
+              onClick={() => navigate('/profile')} 
+              style={{ fontSize: '18px', color: '#e0e0e0', fontWeight: '500', cursor: 'pointer', textDecoration: 'underline' }}
+          >
+              Welcome (View Profile)
+          </span>
+
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={() => navigate('/dashboard')} style={navBtnStyle}>Dashboard</button>
+            <button onClick={() => navigate('/ride-requests')} style={navBtnStyle}>Requests</button>
+            <button disabled style={{...navBtnStyle, backgroundColor: '#333', cursor: 'default', border: '1px solid #555'}}>My Bookings</button>
+            <button onClick={handleLogout} style={{...navBtnStyle, backgroundColor: '#d9534f'}}>Logout</button>
+          </div>
+        </div>
+      </nav>
+
+      <div style={{ padding: '40px', maxWidth: '1100px', margin: 'auto' }}>
+        <h1 style={{ color: 'white', marginBottom: '30px' }}>My Bookings</h1>
+
         {bookings.length === 0 ? (
-          <p>You haven't booked any rides yet.</p>
+           <p style={{ color: '#aaa', fontSize: '18px' }}>You haven't booked any rides yet.</p>
         ) : (
-          bookings.map((booking) => (
-            <div key={booking._id} style={{ 
-              backgroundColor: 'white', 
-              padding: '20px', 
-              borderRadius: '8px', 
-              marginBottom: '15px', 
-              boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              borderLeft: `5px solid ${booking.status === 'Confirmed' ? '#28a745' : '#ffc107'}`
-            }}>
-              <div>
-                <h3 style={{ margin: '0 0 5px 0', color: '#333' }}>
-                  {booking.ride ? `${booking.ride.origin} ➔ ${booking.ride.destination}` : "Ride Details Unavailable"}
-                </h3>
-                <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
-                  Status: <span style={{ fontWeight: 'bold', color: booking.status === 'Confirmed' ? 'green' : 'orange' }}>
-                    {booking.status}
-                  </span>
-                </p>
-              </div>
-              
-              <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                 <span style={{ fontWeight: 'bold' }}>{booking.ride ? `Rs. ${booking.ride.price}` : '-'}</span>
-                 
-                 {/* Cancel Button */}
-                 <button 
-                    onClick={() => handleCancelBooking(booking._id)}
-                    style={{
-                        padding: '5px 10px',
-                        backgroundColor: '#dc3545',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '3px',
-                        fontSize: '12px',
-                        cursor: 'pointer'
-                    }}
-                 >
-                    Cancel
-                 </button>
-              </div>
+           bookings.map((booking) => (
+            <div key={booking._id} style={cardStyle}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                    <div>
+                        <h3 style={{ margin: '0 0 10px 0', fontSize: '20px', color: '#222' }}>
+                          {booking.ride ? `${booking.ride.origin} ➔ ${booking.ride.destination}` : "Ride Unavailable"}
+                        </h3>
+                        {/* Display Driver Name */}
+                        <p style={{ margin: '0 0 5px 0', color: '#555', fontSize: '14px' }}>
+                            <strong>Driver:</strong> {booking.ride && booking.ride.driver ? booking.ride.driver.name : 'Unknown'}
+                        </p>
+                        <p style={{ margin: 0, color: '#555' }}>
+                            Status: <strong style={{ color: booking.status === 'Confirmed' ? 'green' : (booking.status === 'Rejected' ? 'red' : '#e67e22') }}>{booking.status}</strong>
+                        </p>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                        <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', fontSize: '18px', color: '#28a745' }}>
+                            {booking.ride ? `Rs. ${booking.ride.price}` : ''}
+                        </p>
+                    </div>
+                </div>
+
+                <div style={{ height: '1px', backgroundColor: '#eee', margin: '15px 0' }}></div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                {booking.status === 'Completed' ? (
+                    booking.rating > 0 ? (
+                        <span style={{ color: '#f39c12', fontWeight: 'bold', fontSize: '16px' }}>
+                        You rated: {booking.rating} ★
+                        </span>
+                    ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ color: '#555' }}>Rate Driver: </span>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <button key={star} onClick={() => handleRateRide(booking._id, star)} style={starBtnStyle}>
+                            {star}★
+                            </button>
+                        ))}
+                        </div>
+                    )
+                ) : (
+                    <button onClick={() => handleCancelBooking(booking._id)} style={cancelBtnStyle}>
+                    Cancel Booking
+                    </button>
+                )}
+                </div>
             </div>
-          ))
+           ))
         )}
       </div>
     </div>
   );
 };
+
+const navStyle = { backgroundColor: '#1a1a1a', padding: '15px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.3)' };
+const navBtnStyle = { padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' };
+const cardStyle = { backgroundColor: 'white', padding: '25px', borderRadius: '12px', marginBottom: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' };
+const cancelBtnStyle = { padding: '8px 16px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' };
+const starBtnStyle = { padding: '5px 10px', cursor: 'pointer', backgroundColor: '#f8f9fa', border: '1px solid #ddd', borderRadius: '4px', margin: '0 2px', color: '#333' };
 
 export default MyBookings;

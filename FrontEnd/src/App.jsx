@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import PostRide from './pages/PostRide';
 import MyBookings from './pages/MyBookings';
 import RideRequests from './pages/RideRequests';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/post-ride" element={<PostRide />} />
             <Route path="/my-bookings" element={<MyBookings />} /> 
             <Route path="/ride-requests" element={<RideRequests />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
       </Router>

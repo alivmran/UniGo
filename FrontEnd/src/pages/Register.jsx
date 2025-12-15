@@ -22,10 +22,8 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // 1. Send Register Request
       const res = await axios.post('/api/auth/register', formData);
-      
-      // 2. If successful, log them in immediately
+
       login(res.data.token);
       navigate('/dashboard'); 
     } catch (err) {
@@ -92,7 +90,6 @@ const Register = () => {
   );
 };
 
-// Simple reusable styles
 const inputStyle = { width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' };
 const buttonStyle = { width: '100%', padding: '12px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', fontSize: '16px', cursor: 'pointer' };
 

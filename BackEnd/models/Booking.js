@@ -13,8 +13,16 @@ const BookingSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Requested', 'Confirmed', 'Rejected'],
+    enum: ['Requested', 'Confirmed', 'Rejected', 'Completed'], 
     default: 'Requested'
+  },
+  rating: { 
+    type: Number,
+    default: 0 
+  },
+  review: { 
+    type: String,
+    default: ''
   },
   date: {
     type: Date,
