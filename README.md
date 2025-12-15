@@ -13,14 +13,14 @@ MongoDB (Local or Atlas URI)
 
 1. Clone the Repository
 
-git clone https://github.com/alivmran/UniGo.git
+  git clone https://github.com/alivmran/UniGo.git
 
-cd UniGo
+  cd UniGo
 
 2. Backend Setup
-Navigate to the backend directory, install dependencies, and start the server.
+  Navigate to the backend directory, install dependencies, and start the server.
 
-cd BackEnd
+  cd BackEnd
 
 # Install server dependencies
 npm install
@@ -41,7 +41,7 @@ npm install
 
 3. Frontend Setup
 
-Open a new terminal, navigate to the frontend directory, and launch the React application.
+  Open a new terminal, navigate to the frontend directory, and launch the React application.
 
 cd FrontEnd
 
@@ -81,13 +81,16 @@ cd FrontEnd
   
   vite: Next Generation Frontend Tooling (fast build tool).
 
+  
   ✨ Features
+
   
   🔒 Authentication & Profile
   
   . Secure Sign Up/Login: JWT-based authentication ensures user data security.
   
   . User Profiles: View personal stats including "Rides Given," "Rides Taken," and your calculated "Driver Rating."
+  
   
   🚗 Ride Management (Driver)
   
@@ -99,6 +102,7 @@ cd FrontEnd
   
   . Self-Booking Protection: Logic prevents drivers from booking seats on their own rides.
   
+  
   🎫 Booking System (Passenger)
   
   . Search & Filter: Find rides quickly by searching for locations (e.g., "Clifton", "Campus").
@@ -109,11 +113,13 @@ cd FrontEnd
   
   . Cancellation: Passengers can cancel bookings before the ride starts.
   
+  
   ⭐ Trust & Safety
   
   . Rating System: A percentage-based rating system (e.g., 80% score) derived from past completed rides.
   
   . Driver Transparency: Drivers' names and ratings are visible on ride cards before booking.
+  
   
   🛠️ Tech Stack
   
@@ -126,4 +132,5 @@ cd FrontEnd
   Node.js: Runtime Environment
 
 Author:
+
 Syed Ali Imran
