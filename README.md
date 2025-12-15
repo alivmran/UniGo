@@ -10,7 +10,9 @@ Node.js (v14 or higher)
 
 MongoDB (Local or Atlas URI)
 
+
 1. Clone the Repository
+
 git clone https://github.com/alivmran/UniGo.git
 
 cd UniGo
@@ -23,17 +25,22 @@ cd BackEnd
 # Install server dependencies
 npm install
 
-# Create a .env file (or modify config.js) with your secrets:
+# Create a .env file
 
   PORT=5000
+  
   MONGO_URI=your_mongodb_connection_string
+  
   JWT_SECRET=your_jwt_secret
 
 # Run the server
  node server.js
+ 
  The server will run on http://localhost:5000
 
+
 3. Frontend Setup
+
 Open a new terminal, navigate to the frontend directory, and launch the React application.
 
 cd FrontEnd
@@ -42,7 +49,9 @@ cd FrontEnd
  npm install
 
  Run the development server (Vite)
+ 
  npm run dev
+ 
  The app will generally run on http://localhost:5173
 
 # 📦 Dependencies
@@ -51,26 +60,37 @@ cd FrontEnd
   Backend (/BackEnd)
 
   express: Web framework for Node.js.
+  
   mongoose: ODM for MongoDB.
+  
   bcryptjs: Password hashing for secure authentication.
+  
   jsonwebtoken: Handling JWTs for protected routes.
+  
   cors: Enabling Cross-Origin Resource Sharing.
+  
   dotenv: Loading environment variables.
 
   Frontend (/FrontEnd)
 
   react: The UI library.
+  
   react-router-dom: Handling client-side routing.
+  
   axios: Making HTTP requests to the backend.
+  
   vite: Next Generation Frontend Tooling (fast build tool).
 
   ✨ Features
+  
   🔒 Authentication & Profile
+  
   . Secure Sign Up/Login: JWT-based authentication ensures user data security.
   
   . User Profiles: View personal stats including "Rides Given," "Rides Taken," and your calculated "Driver Rating."
   
   🚗 Ride Management (Driver)
+  
   . Post a Ride: Easily create a ride offering by setting origin, destination, date, time, and price.
   
   . Request Management: Accept or Reject incoming booking requests from passengers.
@@ -80,6 +100,7 @@ cd FrontEnd
   . Self-Booking Protection: Logic prevents drivers from booking seats on their own rides.
   
   🎫 Booking System (Passenger)
+  
   . Search & Filter: Find rides quickly by searching for locations (e.g., "Clifton", "Campus").
   
   . Smart Booking: Request seats on available rides.
@@ -89,18 +110,20 @@ cd FrontEnd
   . Cancellation: Passengers can cancel bookings before the ride starts.
   
   ⭐ Trust & Safety
+  
   . Rating System: A percentage-based rating system (e.g., 80% score) derived from past completed rides.
   
   . Driver Transparency: Drivers' names and ratings are visible on ride cards before booking.
   
   🛠️ Tech Stack
+  
   MongoDB: Database
   
   Express.js: Backend Framework
   
   React.js: Frontend Library
 
-Node.js: Runtime Environment
+  Node.js: Runtime Environment
 
 Author:
 Syed Ali Imran
