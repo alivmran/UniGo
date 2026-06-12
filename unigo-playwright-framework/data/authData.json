@@ -1,0 +1,29 @@
+{
+  "validUser": {
+    "email": "test@szabist.pk",
+    "password": "test"
+  },
+  "invalidUser": {
+    "email": "wronguser@unigo.edu",
+    "password": "WrongPassword!"
+  },
+  "searchLocations": [
+    "Nazimabad",
+    "Gulshan",
+    "DHA Phase 6",
+    "Clifton",
+    "FB Area",
+    "Bahria Town",
+    "Korangi",
+    "North Nazimabad",
+    "Malir Cantt",
+    "PECHS"
+  ],
+  "invalidCredentialsMatrix": [
+    {"email": "no_at_symbol.pk", "password": "test"},
+    {"email": "empty_pass@szabist.pk", "password": ""},
+    {"email": "spaces_only@szabist.pk", "password": "   "},
+    {"email": "non_existent@unigo.edu", "password": "random_pass"},
+    {"email": "sql_inject@unigo.edu", "password": "' OR '1'='1"}
+  ]
+}
